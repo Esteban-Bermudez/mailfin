@@ -4,6 +4,7 @@
   "description": "A tool to send added jellyfin titles formatted with TMDB",
   "main": "index.js",
   "scripts": {
+    "dev": "node -r ts-node/register --env-file=.env src/index.ts",
     "start": "ts-node src/index.ts",
     "build": "tsc",
     "serve": "node dist/index.js",
