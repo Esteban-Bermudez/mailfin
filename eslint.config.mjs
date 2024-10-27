@@ -13,7 +13,8 @@ export default [
     rules: {
       "no-var": "error",
       "prefer-const": "error",
-      "@typescript-eslint/no-explicit-any": "off"
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-require-imports": "off",
     },
   },
 ]
