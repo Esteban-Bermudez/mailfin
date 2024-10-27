@@ -56,16 +56,33 @@ baseRouter.post("/", async (req: Request, res: Response) => {
     return
   }
 
+  let tmdbResponse
   try {
-    const tmdbResponse = await fetchTmdbData(req.body.Provider_tmdb)
-    const formattedResponse = formatTmdbResponse(tmdbResponse)
-    res.status(200).json(formattedResponse)
+    tmdbResponse = await fetchTmdbData(req.body.Provider_tmdb)
   } catch (error: any) {
     console.error(error)
     const status = error.status || 500
     const message = error.message || "Error fetching data from TMDB"
     res.status(status).json({ message })
+    return
   }
+  const formattedResponse = formatTmdbResponse(tmdbResponse)
+
+  const sgMail = require("@sendgrid/mail")
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+  const msg = {
+    to: process.env.SENDGRID_RECEIVER_EMAIL,
+    from: process.env.SENDGRID_SENDER_EMAIL,
+    subject:
+      "A new movie has been added to Jellyfin " +
+      formattedResponse.title +
+      ` (${formattedResponse.releaseDate})`,
+    text: "and easy to do anywhere, even with Node.js",
+    html: generateHtmlTemplate(formattedResponse),
+  }
+  sgMail.send(msg)
+
+  res.status(200).json(formattedResponse)
 })
 
 function printRequest(req: Request) {
@@ -95,6 +112,7 @@ async function fetchTmdbData(tmdbId: string) {
     return response.json()
   })
 
+  console.log("TMDB Response: ", tmdbResponse)
   return tmdbResponse
 }
 
@@ -106,14 +124,44 @@ function formatTmdbResponse(response: any): TmdbResponse {
     homepage: response.homepage,
     id: response.id,
     overview: response.overview,
-    posterPath: `${tmdbData.posterUrl}${response.posterPath}`,
-    releaseDate: response.releaseDate,
+    posterPath: `${tmdbData.posterUrl}${response.poster_path}`,
+    releaseDate: response.release_date,
     runtime: response.runtime,
     tagline: response.tagline,
     title: response.title,
     movieUrl: `${tmdbData.movieUrl}${response.id}`,
-    imdbUrl: `${tmdbData.imdbUrl}${response.imdbId}`,
+    imdbUrl: `${tmdbData.imdbUrl}${response.imdb_id}`,
   }
+}
+
+function generateHtmlTemplate(data: any) {
+  return `
+    <html>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2 style="text-align: center;">New Movie Added to Jellyfin</h2>
+        <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse;">
+          <tr>
+            <td style="text-align: center; padding: 10px;">
+              <img
+                src="${data.posterPath}"
+                alt="${data.title} poster"
+                style="width: 100%; max-width: 300px; height: auto; border-radius: 10px;"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; text-align: center;">
+              <h3>${data.title} (${data.releaseDate})</h3>
+              <p style="padding: 0 15px;">${data.overview}</p>
+            </td>
+          </tr>
+        </table>
+        <footer style="text-align: center; margin-top: 20px;">
+          <p style="font-size: 12px; color: #888;">Jellyfin Notifications &copy; 2024</p>
+        </footer>
+      </body>
+    </html>
+  `
 }
 
 app.listen(port, () => {
