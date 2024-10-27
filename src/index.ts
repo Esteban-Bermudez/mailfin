@@ -6,18 +6,34 @@ const port = process.env.PORT || 3000
 const baseUrl = "/webhook"
 const baseRouter = express.Router()
 
-interface TMDBData {
+interface TmdbBaseData {
   apiKey: string
-  movieURL: string
-  tvURL: string
-  posterURL: string
+  movieUrl: string
+  tvUrl: string
+  posterUrl: string
+  imdbUrl: string
 }
 
-const tmdbData: TMDBData = {
+interface TmdbResponse {
+  genres: string
+  homepage: string
+  id: number
+  overview: string
+  posterPath: string
+  releaseDate: string
+  runtime: number
+  tagline: string
+  title: string
+  movieUrl: string
+  imdbUrl: string
+}
+
+const tmdbData: TmdbBaseData = {
   apiKey: process.env.TMDB_API_KEY || "",
-  movieURL: "https://www.themoviedb.org/movie/",
-  tvURL: "https://www.themoviedb.org/tv/",
-  posterURL: "https://image.tmdb.org/t/p/original",
+  movieUrl: "https://www.themoviedb.org/movie/",
+  tvUrl: "https://www.themoviedb.org/tv/",
+  posterUrl: "https://image.tmdb.org/t/p/original",
+  imdbUrl: "https://www.imdb.com/title/",
 }
 
 if (!tmdbData.apiKey) {
