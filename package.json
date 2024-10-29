@@ -39,6 +39,7 @@
     "typescript-eslint": "^8.11.0"
   },
   "dependencies": {
-    "@sendgrid/mail": "^8.1.4"
+    "@sendgrid/mail": "^8.1.4",
+    "nodemailer": "^6.9.16"
   }
 }

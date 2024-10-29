@@ -1,5 +1,7 @@
 import express, { Request, Response } from "express"
 
+const nodeMailer = require("nodemailer")
+
 const app = express()
 const port = process.env.PORT || 3000
 
@@ -68,20 +70,11 @@ baseRouter.post("/", async (req: Request, res: Response) => {
   }
   const formattedResponse = formatTmdbResponse(tmdbResponse)
 
-  const sgMail = require("@sendgrid/mail")
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-  const msg = {
-    to: process.env.SENDGRID_RECEIVER_EMAIL,
-    from: process.env.SENDGRID_SENDER_EMAIL,
-    subject:
-      "A new movie has been added to Jellyfin " +
-      formattedResponse.title +
-      ` (${formattedResponse.releaseDate})`,
-    text: "and easy to do anywhere, even with Node.js",
-    html: generateHtmlTemplate(formattedResponse),
+  if (process.env.MAIL_PROVIDER?.toLowerCase() === "smtp") {
+    await sendSMTPEmail(formattedResponse)
+  } else {
+    await sendSendgridEmail(formattedResponse)
   }
-  sgMail.send(msg)
-
   res.status(200).json(formattedResponse)
 })
 
@@ -132,6 +125,51 @@ function formatTmdbResponse(response: any): TmdbResponse {
     movieUrl: `${tmdbData.movieUrl}${response.id}`,
     imdbUrl: `${tmdbData.imdbUrl}${response.imdb_id}`,
   }
+}
+
+async function sendSendgridEmail(formattedResponse: TmdbResponse) {
+  const sgMail = require("@sendgrid/mail")
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+  const msg = {
+    to: process.env.SENDGRID_RECEIVER_EMAIL,
+    from: process.env.SENDGRID_SENDER_EMAIL,
+    subject:
+      "A new movie has been added to Jellyfin " +
+      formattedResponse.title +
+      ` (${formattedResponse.releaseDate})`,
+    html: generateHtmlTemplate(formattedResponse),
+  }
+  await sgMail.send(msg)
+}
+
+async function sendSMTPEmail(formattedResponse: TmdbResponse) {
+  const transporter = nodeMailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: process.env.SMTP_PORT || "587",
+    secure: false,
+    auth: {
+      user: process.env.SMTP_AUTH_USER,
+      pass: process.env.SMTP_AUTH_PASSWORD,
+    },
+  })
+
+  const mailOptions = {
+    from: process.env.SMTP_SENDER_EMAIL,
+    to: process.env.SMTP_RECEIVER_EMAIL,
+    subject:
+      "A new movie has been added to Jellyfin " +
+      formattedResponse.title +
+      ` (${formattedResponse.releaseDate})`,
+    html: generateHtmlTemplate(formattedResponse),
+  }
+
+  await transporter.sendMail(mailOptions, (error: any, info: any) => {
+    if (error) {
+      console.error(error)
+    } else {
+      console.log("Email sent: " + info.response)
+    }
+  })
 }
 
 function generateHtmlTemplate(data: any) {
