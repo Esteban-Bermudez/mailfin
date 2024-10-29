@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express"
 
+const sgMail = require("@sendgrid/mail")
 const nodeMailer = require("nodemailer")
 
 const app = express()
@@ -128,16 +129,29 @@ function formatTmdbResponse(response: any): TmdbResponse {
 }
 
 async function sendSendgridEmail(formattedResponse: TmdbResponse) {
-  const sgMail = require("@sendgrid/mail")
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
   const msg = {
-    to: process.env.SENDGRID_RECEIVER_EMAIL,
-    from: process.env.SENDGRID_SENDER_EMAIL,
-    subject:
-      "A new movie has been added to Jellyfin " +
-      formattedResponse.title +
-      ` (${formattedResponse.releaseDate})`,
-    html: generateHtmlTemplate(formattedResponse),
+    from: {
+      email: process.env.SENDGRID_SENDER_EMAIL,
+    },
+    personalizations: [
+      {
+        to: [
+          {
+            email: process.env.SENDGRID_RECEIVER_EMAIL,
+          },
+        ],
+        dynamic_template_data: {
+          title: formattedResponse.title,
+          releaseDate: formattedResponse.releaseDate,
+          overview: formattedResponse.overview,
+          posterPath: formattedResponse.posterPath,
+          movieUrl: formattedResponse.movieUrl,
+          imdbUrl: formattedResponse.imdbUrl,
+        },
+      },
+    ],
+    templateId: process.env.SENDGRID_TEMPLATE_ID,
   }
   await sgMail.send(msg)
 }
@@ -176,7 +190,8 @@ function generateHtmlTemplate(data: any) {
   return `
     <html>
       <body style="font-family: Arial, sans-serif; line-height: 1.6;">
-        <h2 style="text-align: center;">New Movie Added to Jellyfin</h2>
+        <h3 style="text-align: center;">A new movie was added to Jellyfin</h3>
+        <h1 style="text-align: center;">${data.title}</h1>
         <table style="width: 100%; max-width: 600px; margin: 0 auto; border-collapse: collapse;">
           <tr>
             <td style="text-align: center; padding: 10px;">
@@ -193,9 +208,14 @@ function generateHtmlTemplate(data: any) {
               <p style="padding: 0 15px;">${data.overview}</p>
             </td>
           </tr>
+          <tr>
+            <td align="center" bgcolor="#007ca6" class="inner-td" style="border-radius:6px; font-size:16px; text-align:center; background-color:inherit;">
+                  <a href="" style="background-color:#007ca6; border:1px solid #333333; border-color:#333333; border-radius:6px; border-width:1px; color:#ffffff; display:inline-block; font-size:14px; font-weight:normal; letter-spacing:0px; line-height:normal; padding:12px 18px 12px 18px; text-align:center; text-decoration:none; border-style:solid;" target="_blank">Button Text</a>
+            </td>
+          </tr>
         </table>
         <footer style="text-align: center; margin-top: 20px;">
-          <p style="font-size: 12px; color: #888;">Jellyfin Notifications &copy; 2024</p>
+          <p style="font-size: 12px; color: #AAA;">Esteban Bermudez &copy; 2024</p>
         </footer>
       </body>
     </html>
