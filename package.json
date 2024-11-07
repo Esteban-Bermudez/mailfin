@@ -1,7 +1,7 @@
 {
-  "name": "jellyfin-email-notification",
+  "name": "mailfin",
   "version": "1.0.0",
-  "description": "A tool to send added jellyfin titles formatted with TMDB",
+  "description": "A simple email notifier for Jellyfin",
   "main": "index.js",
   "scripts": {
     "dev": "node -r ts-node/register --env-file=.env src/index.ts",
@@ -19,6 +19,7 @@
     "email",
     "notifier",
     "webhooks",
+    "mailfin",
     "server",
     "media",
     "tmdb"
