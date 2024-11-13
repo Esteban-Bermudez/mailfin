@@ -5,10 +5,6 @@ import { sendSMTPEmail } from "../services/smtpService";
 
 const router = express.Router();
 
-router.get("/", (req: Request, res: Response) => {
-  res.status(200).json({ message: "Webhook is active" })
-})
-
 router.post("/", async (req: Request, res: Response) => {
   printRequest(req)
   if (!req.body.Provider_tmdb) {
