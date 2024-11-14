@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express"
-import emailRouter from "./routes/email"
+import itemAddedRouter from "./routes/itemAdded"
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -13,7 +13,7 @@ baseRouter.get("/", (req: Request, res: Response) => {
 
 // Routes
 app.use("/", baseRouter)
-app.use("/email", emailRouter)
+app.use("/item-added", itemAddedRouter)
 
 app.listen(port, () => {
   console.log(`Server running at http://0.0.0.0:${port}`)
