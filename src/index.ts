@@ -8,8 +8,7 @@ app.use(express.json())
 
 const baseRouter = express.Router()
 baseRouter.get("/", (req: Request, res: Response) => {
-  console.log(req.headers)
-  console.log(req.body)
+  console.log(req.headers, req.body)
   res.status(200).json({ message: "Mailfin is Active" })
 })
 

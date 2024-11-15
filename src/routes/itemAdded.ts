@@ -1,14 +1,16 @@
-import express, { Request, Response } from "express";
-import { sendSendgridEmail } from "../services/sendgridService";
-import { sendSMTPEmail } from "../services/smtpService";
-import { getTmdbData } from "../services/tmdbService";
+import express, { Request, Response } from "express"
+import { sendSendgridEmail } from "../services/sendgridService"
+import { sendSMTPEmail } from "../services/smtpService"
+import { getTmdbData } from "../services/tmdbService"
 
-const router = express.Router();
+const router = express.Router()
 
 router.post("/", async (req: Request, res: Response) => {
-  printRequest(req)
+  console.log(req.headers, req.body)
   if (!req.body.Provider_tmdb) {
-    res.status(400).json({ message: "TMDB ID not found in body" })
+    res
+      .status(400)
+      .json({ message: "TMDB ID not found in body (Provider_tmdb)" })
     return
   }
 
@@ -16,10 +18,7 @@ router.post("/", async (req: Request, res: Response) => {
   try {
     tmdbResponse = await getTmdbData(req.body.Provider_tmdb)
   } catch (error: any) {
-    console.error(error)
-    const status = error.status || 500
-    const message = error.message || "Error fetching data from TMDB"
-    res.status(status).json({ message })
+    res.status(error.status).json({ tmdbError: error })
     return
   }
 
@@ -31,9 +30,4 @@ router.post("/", async (req: Request, res: Response) => {
   res.status(200).json(tmdbResponse)
 })
 
-function printRequest(req: Request) {
-  console.log("Headers: ", req.headers)
-  console.log("Body: ", req.body)
-}
-
-export default router;
+export default router
