@@ -18,16 +18,28 @@ router.post("/", async (req: Request, res: Response) => {
   try {
     tmdbResponse = await getTmdbData(req.body.Provider_tmdb)
   } catch (error: any) {
-    res.status(error.status).json({ tmdbError: error })
+    res
+      .status(error.status)
+      .json({ message: "Unable to get details from TMDB", tmdbErrors: error })
     return
   }
 
   if (process.env.MAIL_PROVIDER?.toLowerCase() === "smtp") {
+    // TODO: Add error handling for SMTP and refactor to separate route
     await sendSMTPEmail(tmdbResponse)
   } else {
-    await sendSendgridEmail(tmdbResponse)
+    try {
+      await sendSendgridEmail(tmdbResponse)
+    } catch (error: any) {
+      res
+        .status(error.code)
+        .json({ sendgridErrors: error.response.body.errors })
+      return
+    }
   }
-  res.status(200).json(tmdbResponse)
+  res
+    .status(200)
+    .json({ message: "Email successfully delivered", data: tmdbResponse })
 })
 
 export default router
