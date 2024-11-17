@@ -6,7 +6,7 @@ export async function getTmdbData(tmdbId: string) {
     if (!response.ok) {
       throw {
         status: response.status,
-        statusText: "TMDB ERROR: " + response.statusText,
+        statusText: response.statusText,
       }
     }
     return response.json()
