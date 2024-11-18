@@ -25,8 +25,12 @@ router.post("/", async (req: Request, res: Response) => {
   }
 
   if (process.env.MAIL_PROVIDER?.toLowerCase() === "smtp") {
-    // TODO: Add error handling for SMTP and refactor to separate route
-    await sendSMTPEmail(tmdbResponse)
+    try {
+      await sendSMTPEmail(tmdbResponse)
+    } catch (error: any) {
+      res.status(500).json({ smtpErrors: error })
+      return
+    }
   } else {
     try {
       await sendSendgridEmail(tmdbResponse)

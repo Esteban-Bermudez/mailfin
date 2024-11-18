@@ -24,11 +24,5 @@ export async function sendSMTPEmail(formattedResponse: TmdbResponse) {
     html: generateHtmlTemplate(formattedResponse),
   }
 
-  await transporter.sendMail(mailOptions, (error: any, info: any) => {
-    if (error) {
-      console.error(error)
-    } else {
-      console.log("Email sent: " + info.response)
-    }
-  })
+  await transporter.sendMail(mailOptions)
 }
