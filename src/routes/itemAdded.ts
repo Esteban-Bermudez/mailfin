@@ -7,20 +7,14 @@ const router = express.Router()
 
 router.post(["/", "/sendgrid"], async (req: Request, res: Response) => {
   console.log(req.headers, req.body)
-  if (!req.body.Provider_tmdb) {
-    res
-      .status(400)
-      .json({ message: "TMDB ID not found in body (Provider_tmdb)" })
-    return
-  }
 
   let tmdbResponse
   try {
-    tmdbResponse = await getTmdbData(req.body.Provider_tmdb)
+    tmdbResponse = await getTmdbData(req.body)
   } catch (error: any) {
     res
       .status(error.status)
-      .json({ message: "Unable to get details from TMDB", tmdbErrors: error })
+      .json({ tmdbErrors: error })
     return
   }
 
@@ -37,16 +31,10 @@ router.post(["/", "/sendgrid"], async (req: Request, res: Response) => {
 
 router.post("/smtp", async (req: Request, res: Response) => {
   console.log(req.headers, req.body)
-  if (!req.body.Provider_tmdb) {
-    res
-      .status(400)
-      .json({ message: "TMDB ID not found in body (Provider_tmdb)" })
-    return
-  }
 
   let tmdbResponse
   try {
-    tmdbResponse = await getTmdbData(req.body.Provider_tmdb)
+    tmdbResponse = await getTmdbData(req.body)
   } catch (error: any) {
     res
       .status(error.status)
