@@ -17,6 +17,7 @@ export interface TmdbResponse {
   tagline: string
   title: string
   movieUrl: string
+  tvUrl: string
   imdbUrl: string
 }
 
