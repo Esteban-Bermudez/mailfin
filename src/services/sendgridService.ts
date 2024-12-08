@@ -17,7 +17,7 @@ export async function sendSendgridEmail(formattedResponse: TmdbResponse) {
       {
         to: receiverEmails, // array of objects with email key and value
         dynamic_template_data: {
-          title: formattedResponse.title,
+          title: `${formattedResponse.title} (${formattedResponse.releaseDate.slice(0, 4)})`,
           releaseDate: formattedResponse.releaseDate,
           overview: formattedResponse.overview,
           posterPath: formattedResponse.posterPath,
