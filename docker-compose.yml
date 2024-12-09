@@ -1,9 +1,8 @@
 services:
   mailfin:
-    build: .
+    image: mailfin/mailfin:latest
     container_name: mailfin
     ports:
       - "3000:3000"
     restart: unless-stopped
     env_file: .env
-
