@@ -1,6 +1,6 @@
 # Mailfin 📫
 
-Mailfin is an open-source application designed to enhance your Jellyfin experience by enabling email notifications for events such as new media being added. By integrating with **SendGrid** or **SMTP**, Mailfin provides a straightforward solution for sending email notifications.
+Mailfin is an open-source application designed to enhance your Jellyfin experience by enabling email notifications for events such as adding new media. By integrating with **SendGrid** or **SMTP**, Mailfin provides a straightforward solution for sending email notifications.
 
 ---
 
@@ -15,7 +15,7 @@ Mailfin is an open-source application designed to enhance your Jellyfin experien
 
 ## 🚀 Motivation
 
-While using a VPN to connect to my Jellyfin server, I noticed I couldn't pull in external data from links, such as images due to my server not being able to be accessed publicly. Jellyfin Webhook plugin is also limited in the format I would like for my email notifications. This inspired me to create Mailfin, which bridges this gap and provides a simple way to handle email notifications for server events.
+While using a VPN to connect to my Jellyfin server, I noticed I couldn't pull in external data from links, such as images due to my server being unable to be accessed publicly. The Jellyfin Webhook plugin is also limited in the format I want for my email notifications. This inspired me to create Mailfin, which bridges this gap and provides a simple way to handle email notifications for server events.
 
 ---
 
@@ -39,7 +39,7 @@ While using a VPN to connect to my Jellyfin server, I noticed I couldn't pull in
 5. Add a new generic webhook with the following settings:
    - **Webhook Name**: Mailfin
    - **Webhook URL**: `http://localhost:3000/item-added`
-     (replace `localhost` with your server IP if running Mailfin on a different machine).
+   (replace `localhost` with your server IP if running Mailfin on a different machine).
    - **Notification Types**: Select the `ItemAdded` event.
    - Check **Enable** and **Send All Properties**.
 6. Click **Save**.
@@ -56,11 +56,11 @@ If you don't want to send all properties, you can customize the Webhook plugin t
 
 ## 📬 Running Mailfin
 
-## Mailfin is an Express.js application that runs on **port 3000** by default. You can run it in two ways:
+Mailfin is an Express.js application that runs on **port 3000** by default. You can run it in two ways:
 
 #### **Option 1: Using Docker**
 
-1. Create an `.env` file from the `sample.env` template
+1. Create a `.env` file from the `sample.env` template
 2. Update the `.env` file with your TMDB Api Key and your SendGrid or SMTP credentials.
 3. Run the image from Docker Hub:
    ```bash
@@ -82,11 +82,11 @@ If you don't want to send all properties, you can customize the Webhook plugin t
    ```bash
    npm install
    ```
-3. Create an `.env` file from the `sample.env` template:
+3. Create a `.env` file from the `sample.env` template:
    ```bash
    cp sample.env .env
    ```
-4. Update the `.env` file with your SendGrid or SMTP credentials and TMDB Api Key.
+4. Update the `.env` file with your SendGrid or SMTP credentials and TMDB API Key.
 5. Build and run the application:
    ```bash
    npm run build
