@@ -19,6 +19,7 @@ export interface TmdbResponse {
   movieUrl: string
   tvUrl: string
   imdbUrl: string
+  emails: string
 }
 
 export const tmdbData: TmdbBaseData = {
