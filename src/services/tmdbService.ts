@@ -29,10 +29,10 @@ export async function getTmdbData(requestBody: any) {
     return response.json()
   })
 
-  return formatTmdbResponse(tmdbResponse)
+  return formatTmdbResponse(tmdbResponse, requestBody.emails)
 }
 
-export function formatTmdbResponse(response: any): TmdbResponse {
+export function formatTmdbResponse(response: any, emails: string): TmdbResponse {
   return {
     genres: response.genres
       .map((genre: { id: number; name: string }) => genre.name)
@@ -48,5 +48,6 @@ export function formatTmdbResponse(response: any): TmdbResponse {
     movieUrl: `${tmdbData.movieUrl}${response.id}`,
     tvUrl: `${tmdbData.tvUrl}${response.id}`,
     imdbUrl: `${tmdbData.imdbUrl}${response.imdb_id}`,
+    emails: emails,
   }
 }

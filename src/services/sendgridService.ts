@@ -4,7 +4,7 @@ import { TmdbResponse } from "../config/tmdbConfig"
 export async function sendSendgridEmail(formattedResponse: TmdbResponse) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-  const receiverEmails = (process.env.SENDGRID_RECEIVER_EMAIL || "")
+  const receiverEmails = ( formattedResponse.emails || process.env.SENDGRID_RECEIVER_EMAIL || "")
     .replace(/\s/g, "")
     .split(",")
     .map((email: string) => ({ email: email }))
