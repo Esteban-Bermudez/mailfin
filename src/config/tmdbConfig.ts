@@ -3,6 +3,7 @@ interface TmdbBaseData {
   movieUrl: string
   tvUrl: string
   posterUrl: string
+  backdropUrl: string
   imdbUrl: string
 }
 
@@ -26,7 +27,10 @@ export const tmdbData: TmdbBaseData = {
   apiKey: process.env.TMDB_API_KEY || "",
   movieUrl: "https://www.themoviedb.org/movie/",
   tvUrl: "https://www.themoviedb.org/tv/",
+  // Can be refactored to use TMDB's image configuration endpoint
   posterUrl: "https://image.tmdb.org/t/p/original",
+  backdropUrl: "https://image.tmdb.org/t/p/original",
+
   imdbUrl: "https://www.imdb.com/title/",
 }
 

@@ -1,10 +1,10 @@
 const sgMail = require("@sendgrid/mail")
-import { TmdbResponse } from "../config/tmdbConfig"
+import { MailfinResponse } from "../config/mailfinConfig"
 
-export async function sendSendgridEmail(formattedResponse: TmdbResponse) {
+export async function sendSendgridEmail(formattedResponse: MailfinResponse) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
-  const receiverEmails = ( formattedResponse.emails || process.env.SENDGRID_RECEIVER_EMAIL || "")
+  const receiverEmails = formattedResponse.emails
     .replace(/\s/g, "")
     .split(",")
     .map((email: string) => ({ email: email }))
@@ -17,7 +17,7 @@ export async function sendSendgridEmail(formattedResponse: TmdbResponse) {
       {
         to: receiverEmails, // array of objects with email key and value
         dynamic_template_data: {
-          title: `${formattedResponse.title} (${formattedResponse.releaseDate.slice(0, 4)})`,
+          title: `${formattedResponse.name} (${formattedResponse.releaseYear})`,
           releaseDate: formattedResponse.releaseDate,
           overview: formattedResponse.overview,
           posterPath: formattedResponse.posterPath,
