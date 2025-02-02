@@ -54,6 +54,11 @@ If you don't want to send all properties, you can customize the Webhook plugin t
 }
 ```
 
+**NOTE**: `ItemType` is required for Mailfin to determine the type of media being added. `Provider_tmdb`
+is optional and is used to fetch metadata from TMDB, if not provided, Mailfin will use the data from the webhook.
+If you are not using the TMDB API, you can remove the `Provider_tmdb` property from the Webhook plugin, but it is
+suggested to then Send All Properties from the webhook.
+
 ## 📬 Running Mailfin
 
 Mailfin is an Express.js application that runs on **port 3000** by default. You can run it in two ways:

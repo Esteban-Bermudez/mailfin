@@ -12,7 +12,8 @@ router.post(["/", "/sendgrid"], async (req: Request, res: Response) => {
   try {
     tmdbResponse = await getTmdbData(req.body)
   } catch (error: any) {
-    res.status(error.status).json({ tmdbErrors: error })
+    console.log("Error getting data from TMDB", error)
+    res.status(error.status || 500).json({ tmdbErrors: error })
     return
   }
 
