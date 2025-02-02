@@ -9,6 +9,15 @@ export async function sendSendgridEmail(formattedResponse: MailfinResponse) {
     .split(",")
     .map((email: string) => ({ email: email }))
 
+  let templateId
+  if (formattedResponse.itemType === "Movie") {
+    templateId = process.env.SENDGRID_MOVIE_TEMPLATE_ID
+  } else if (formattedResponse.itemType === "Season") {
+    templateId = process.env.SENDGRID_SEASON_TEMPLATE_ID
+  } else {
+    templateId = process.env.SENDGRID_EPISODE_TEMPLATE_ID
+  }
+
   const msg = {
     from: {
       email: process.env.SENDGRID_SENDER_EMAIL,
@@ -46,7 +55,15 @@ export async function sendSendgridEmail(formattedResponse: MailfinResponse) {
         },
       },
     ],
-    templateId: process.env.SENDGRID_TEMPLATE_ID,
+    templateId: templateId,
   }
-  await sgMail.send(msg)
+  await sgMail
+    .send(msg)
+    .then((response: any) => {
+      console.log(response[0].statusCode)
+      console.log(response[0].headers)
+    })
+    .catch((error: any) => {
+      console.error(error)
+    })
 }
