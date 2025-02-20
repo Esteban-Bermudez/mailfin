@@ -60,8 +60,7 @@ export async function sendSendgridEmail(formattedResponse: MailfinResponse) {
   await sgMail
     .send(msg)
     .then((response: any) => {
-      console.log(response[0].statusCode)
-      console.log(response[0].headers)
+      console.log("Sendgrid Mail Status Code: " + response[0].statusCode)
     })
     .catch((error: any) => {
       console.error(error)
