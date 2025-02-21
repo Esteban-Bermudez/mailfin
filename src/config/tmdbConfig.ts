@@ -24,7 +24,7 @@ export interface TmdbResponse {
 }
 
 export const tmdbData: TmdbBaseData = {
-  apiKey: process.env.TMDB_API_KEY || "",
+  apiKey: process.env.TMDB_ACCESS_TOKEN || process.env.TMDB_API_KEY || "",
   movieUrl: "https://www.themoviedb.org/movie/",
   tvUrl: "https://www.themoviedb.org/tv/",
   // Can be refactored to use TMDB's image configuration endpoint
