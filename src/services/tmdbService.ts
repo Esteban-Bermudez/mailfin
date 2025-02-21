@@ -10,19 +10,47 @@ export async function getTmdbData(requestBody: any) {
     }
   }
 
-  if (!requestBody.Provider_tmdb) {
-    // Return the data that is pulled from Jellyfin
-    return formatTmdbResponse(null, requestBody)
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization: "Bearer " + tmdbData.apiKey,
+    },
   }
 
-  const tmdbId: number = requestBody.Provider_tmdb
+  let tmdbId: number = requestBody.Provider_tmdb
+  if (!requestBody.Provider_tmdb) {
+    // Get the TMDB id by searching for the movie or series by name
+    const query =
+      requestBody.ItemType === "Movie"
+        ? requestBody.Name
+        : requestBody.SeriesName
+    const searchURL = ` https://api.themoviedb.org/3/search/tv?query=${query}&page=1`
+    const searchResponse = await fetch(searchURL, options).then((response) => {
+      if (!response.ok) {
+        throw {
+          status: response.status,
+          statusText: response.statusText,
+        }
+      }
+      return response.json()
+    })
+    tmdbId = searchResponse.results[0].id
+    requestBody["Provider_tmdb"] = tmdbId
+  }
 
-  const url =
-    requestBody.ItemType === "Movie"
-      ? `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${tmdbData.apiKey}`
-      : `https://api.themoviedb.org/3/tv/${tmdbId}?api_key=${tmdbData.apiKey}`
+  let url
+  if (requestBody.ItemType === "Movie") {
+    url = `https://api.themoviedb.org/3/movie/${tmdbId}`
+  } else if (requestBody.ItemType === "Season") {
+    url = `https://api.themoviedb.org/3/tv/${tmdbId}/season/${requestBody.SeasonNumber}`
+  } else if (requestBody.ItemType === "Episode") {
+    url = `https://api.themoviedb.org/3/tv/${tmdbId}/season/${requestBody.SeasonNumber}/episode/${requestBody.EpisodeNumber}`
+  } else {
+    url = `https://api.themoviedb.org/3/tv/${tmdbId}`
+  }
 
-  const tmdbResponse = await fetch(url).then((response) => {
+  const tmdbResponse = await fetch(url, options).then((response) => {
     if (!response.ok) {
       throw {
         status: response.status,
@@ -39,9 +67,12 @@ export function formatTmdbResponse(
   response: any,
   jellyfinData: any,
 ): MailfinResponse {
-
   let jellyfinPosterPath
   let jellyfinBackdropPath
+  let tmdbReleaseYear
+  let tmdbGenres
+  let tmdbPosterPath
+  let tmdbSeasonEpisodeCount
 
   if (jellyfinData.ServerUrl && jellyfinData.ItemId) {
     jellyfinPosterPath = `${jellyfinData.ServerUrl}/Items/${jellyfinData.ItemId}/Images/Primary`
@@ -50,6 +81,28 @@ export function formatTmdbResponse(
 
   if (jellyfinData.SeriesId) {
     jellyfinBackdropPath = `${jellyfinData.ServerUrl}/Items/${jellyfinData.SeriesId}/Images/Thumb`
+  }
+
+  if (response.release_date) {
+    tmdbReleaseYear = response.release_date?.slice(0, 4)
+    tmdbReleaseYear = parseInt(tmdbReleaseYear)
+  } else if (response.air_date) {
+    tmdbReleaseYear = response.air_date?.slice(0, 4)
+    tmdbReleaseYear = parseInt(tmdbReleaseYear)
+  }
+
+  if (response.genres) {
+    tmdbGenres = response.genres.map((genre: any) => genre.name).join(", ")
+  }
+
+  if (response.poster_path) {
+    tmdbPosterPath = tmdbData.posterUrl + response.poster_path
+  } else if (response.still_path) {
+    tmdbPosterPath = tmdbData.posterUrl + response.still_path
+  }
+
+  if (response.episodes) {
+    tmdbSeasonEpisodeCount = response.episodes.length
   }
 
   return {
@@ -61,32 +114,31 @@ export function formatTmdbResponse(
     serverName: jellyfinData.ServerName || "",
 
     seasonCount: jellyfinData.SeasonCount || 0,
-    seasonEpisodeCount: jellyfinData.SeasonEpisodeCount || 0,
+    seasonEpisodeCount:
+      jellyfinData.SeasonEpisodeCount || tmdbSeasonEpisodeCount || 0,
     episodeCount: jellyfinData.EpisodeCount || 0,
     episodeNumber: jellyfinData.EpisodeNumber || 0,
     seasonNumber: jellyfinData.SeasonNumber || 0,
 
     overview: jellyfinData?.Overview || response?.overview || "",
-    genres:
-      jellyfinData.Genres ||
-      response?.genres
-        .map((genre: { id: number; name: string }) => genre.name)
-        .join(", ") ||
-      "",
+    genres: jellyfinData.Genres || tmdbGenres || "",
     tagline: jellyfinData.Tagline || response?.tagline || "",
 
     homepage: response?.homepage || "",
-    posterPath: jellyfinPosterPath || tmdbData.posterUrl + response?.poster_path || "",
-    backdropPath: jellyfinBackdropPath || tmdbData.posterUrl + response?.backdrop_path || "",
+    posterPath: jellyfinPosterPath || tmdbPosterPath || "",
+    backdropPath:
+      jellyfinBackdropPath ||
+      tmdbData.posterUrl + response?.backdrop_path ||
+      "",
 
-    releaseYear: jellyfinData.Year || response.release_date.slice(0, 4) || 0,
+    releaseYear: jellyfinData.Year || tmdbReleaseYear || 0,
     releaseDate:
       jellyfinData.PremiereDate ||
       response.release_date ||
-      response.first_air_date ||
+      response.air_date ||
       "No Release Date",
 
-    runtime: jellyfinData.RunTime|| response?.runtime || 0,
+    runtime: jellyfinData.RunTime || response?.runtime || 0,
     name:
       jellyfinData.Name ||
       jellyfinData.SeriesName ||
@@ -99,9 +151,9 @@ export function formatTmdbResponse(
       jellyfinData.ServerUrl +
         "/web/index.html#!/details?id=" +
         jellyfinData.ItemId || "",
-    movieUrl: `${tmdbData.movieUrl}${response?.id}` || "",
-    tvUrl: `${tmdbData.tvUrl}${response?.id}` || "",
+    movieUrl: `${tmdbData.movieUrl}${jellyfinData?.Provider_tmdb}` || "",
+    tvUrl: `${tmdbData.tvUrl}${jellyfinData?.Provider_tmdb}` || "",
     imdbUrl: `${tmdbData.imdbUrl}${response?.imdb_id}` || "",
-    tmdbUrl: `${tmdbData.movieUrl}${response?.id}` || "",
+    tmdbUrl: `${tmdbData.movieUrl}${response?.Provider_tmdb}` || "",
   }
 }
