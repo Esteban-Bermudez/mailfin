@@ -19,7 +19,7 @@ export async function getTmdbData(requestBody: any) {
   }
 
   let tmdbId: number = requestBody.Provider_tmdb
-  if (!requestBody.Provider_tmdb) {
+  if (!requestBody.Provider_tmdb || requestBody.Provider_tmdb == "") {
     // Get the TMDB id by searching for the movie or series by name
     const query =
       requestBody.ItemType === "Movie"
@@ -35,7 +35,16 @@ export async function getTmdbData(requestBody: any) {
       }
       return response.json()
     })
-    tmdbId = searchResponse.results[0].id
+
+    try {
+      tmdbId = searchResponse.results[0].id
+    } catch (error: any) {
+      throw {
+        status: 404,
+        statusText: "TMDB ID not found",
+        tmdbErrors: error,
+      }
+    }
     requestBody["Provider_tmdb"] = tmdbId
   }
 
