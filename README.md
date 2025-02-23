@@ -30,7 +30,7 @@ While using a VPN to connect to my Jellyfin server, I noticed I couldn't pull in
 - Docker (optional, for containerized deployment).
 - Node.js (optional, for manual deployment).
 
-#### Webhook Plugin Configuration
+### Webhook Plugin Configuration
 
 1. Open the Jellyfin dashboard.
 2. Go to **Dashboard** > **Plugins** > **Catalog**.
@@ -44,20 +44,63 @@ While using a VPN to connect to my Jellyfin server, I noticed I couldn't pull in
    - Check **Enable** and **Send All Properties**.
 6. Click **Save**.
 
-Sending all properties is important for Mailfin to receive the necessary data to send email notifications.
-If you don't want to send all properties, you can customize the Webhook plugin to send only the required data.
+#### Choosing Data to Send
 
+- **ItemType**: Required for Mailfin to determine the type of media being added.
+- **Name**: The name of the media item.
+- **SeriesName**: The name of the series.
+- **Emails**: The email addresses to send notifications to (comma-separated). (ie. `name@email.com, user@example.com`).
+- **SeasonNumber**: The season number of the series.
+- **EpisodeNumber**: The episode number of the series.
+
+Here is an example of how you can add more data to your handlebars template in the webhook for more information see the
+`templates` directory in the project. (`Provider_tmdb` is optional and is used to fetch metadata for movies with TMDB, if
+not provided, Mailfin will use the data from the webhook and the first result based on `Name`.)
+
+**Minimal Example**:
 ```json
 {
-    "Provider_tmdb": {{Provider_tmdb}},
-    "ItemType" : {{ItemType}},
+  "ItemType": "{{ItemType}}",
+  "Name": "{{Name}}",
+  "SeriesName": "{{SeriesName}}",
+  "Emails": ""
+  "SeasonNumber": "{{SeasonNumber}}",
+  "EpisodeNumber": "{{EpisodeNumber}}"
+
+  "Provider_tmdb": "{{Provider_tmdb}}",
 }
 ```
 
-**NOTE**: `ItemType` is required for Mailfin to determine the type of media being added. `Provider_tmdb`
-is optional and is used to fetch metadata from TMDB, if not provided, Mailfin will use the data from the webhook.
-If you are not using the TMDB API, you can remove the `Provider_tmdb` property from the Webhook plugin, but it is
-suggested to then Send All Properties from the webhook.
+**Using Metadata from Jellyfin**:
+
+```json
+{
+  "Overview": "{{Overview}}",
+  "PremiereDate": "{{PremiereDate}}",
+  "RunTime": "{{RunTime}}",
+  "Genres": "{{Genres}}",
+  "ReleaseDate": "{{ReleaseDate}}",
+  "Year": "{{Year}}",
+  "Tagline": "{{Tagline}}",
+  "Provider_imdb": "{{Provider_imdb}}"
+}
+```
+
+**Using Server Information**:
+
+Not required but can be used for custom poster + thumbnail images and direct links to added media.
+One of the main reasons I made Mailfin was so that images could be loaded if your server is protected by a VPN.
+
+```json
+{
+  "ServerUrl": "{{ServerUrl}}",
+  "ItemId": "{{ItemId}}",
+  "SeriesId": "{{SeriesId}}",
+}
+```
+
+**NOTE**: `ItemType` is required for Mailfin to determine the type of media being added. Removing this will cause
+Mailfin to fail. `Provider_tmdb` is optional and is used to fetch metadata for movies with TMDB, if not provided, Mailfin will use the data from the webhook and the first result based on `Name`. `SeriesName` and Season and Episode information.
 
 ## 📬 Running Mailfin
 
