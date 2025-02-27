@@ -2,6 +2,10 @@
 
 Mailfin is an open-source application designed to enhance your Jellyfin experience by enabling email notifications for events such as adding new media. By integrating with **SendGrid** or **SMTP**, Mailfin provides a straightforward solution for sending email notifications.
 
+<img width="319" alt="image" src="https://github.com/user-attachments/assets/6ac7d8f6-b988-4f7d-bcb5-cf78045a8461" />
+
+<img width="409" height="731" alt="image" src="https://github.com/user-attachments/assets/5e61a99b-a4e1-4038-bf82-c61523b80e05" />
+
 ---
 
 ## ✨ Features
