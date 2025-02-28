@@ -56,7 +56,7 @@ export async function getTmdbData(requestBody: any) {
   } else if (requestBody.ItemType === "Episode") {
     url = `https://api.themoviedb.org/3/tv/${tmdbId}/season/${requestBody.SeasonNumber}/episode/${requestBody.EpisodeNumber}`
   } else {
-    url = `https://api.themoviedb.org/3/tv/${tmdbId}`
+    url = `https://api.themoviedb.org/3/tv/${tmdbId}` // Default to TV Series
   }
 
   const tmdbResponse = await fetch(url, options).then((response) => {

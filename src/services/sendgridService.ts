@@ -14,8 +14,10 @@ export async function sendSendgridEmail(formattedResponse: MailfinResponse) {
     templateId = process.env.SENDGRID_MOVIE_TEMPLATE_ID
   } else if (formattedResponse.itemType === "Season") {
     templateId = process.env.SENDGRID_SEASON_TEMPLATE_ID
-  } else {
+  } else if (formattedResponse.itemType === "Episode") {
     templateId = process.env.SENDGRID_EPISODE_TEMPLATE_ID
+  } else {
+    templateId = process.env.SENDGRID_SERIES_TEMPLATE_ID 
   }
 
   const msg = {
