@@ -6,8 +6,6 @@ import { getTmdbData } from "../services/tmdbService"
 const router = express.Router()
 
 router.post(["/", "/sendgrid"], async (req: Request, res: Response) => {
-  console.log(req.headers, req.body)
-
   let tmdbResponse
   try {
     tmdbResponse = await getTmdbData(req.body)
@@ -29,8 +27,6 @@ router.post(["/", "/sendgrid"], async (req: Request, res: Response) => {
 })
 
 router.post("/smtp", async (req: Request, res: Response) => {
-  console.log(req.headers, req.body)
-
   let tmdbResponse
   try {
     tmdbResponse = await getTmdbData(req.body)
