@@ -2,12 +2,11 @@ FROM node:23-alpine
 
 WORKDIR /app
 
-COPY package.json /app
+COPY package.json package-lock.json ./
 RUN npm install
-COPY . /app
-RUN npm run build
+
+COPY dist/ ./dist/
 
 EXPOSE 3000
 
-# Default command
-CMD ["npm", "run", "serve"]
+CMD ["node", "dist/index.js"]
