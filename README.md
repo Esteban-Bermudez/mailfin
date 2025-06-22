@@ -42,8 +42,9 @@ While using a VPN to connect to my Jellyfin server, I noticed I couldn't pull in
 4. Go to **Dashboard** > **Plugins** > **Webhook**.
 5. Add a new generic webhook with the following settings:
    - **Webhook Name**: Mailfin
-   - **Webhook URL**: `http://localhost:3000/item-added`
-   (replace `localhost` with your server IP if running Mailfin on a different machine).
+   - **Webhook URL**: `http://localhost:3000/item-added or http://localhost:3000/item-added/smtp`
+(Depending on your Mailfin setup. Replace `localhost` with your server IP if running Mailfin on a different machine).
+
    - **Notification Types**: Select the `ItemAdded` event.
    - Check **Enable** and **Send All Properties**.
 6. Click **Save**.
