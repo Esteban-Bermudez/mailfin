@@ -1,7 +1,7 @@
 import { MailfinResponse } from "../config/mailfinConfig"
 export function generateHtmlTemplate(data: MailfinResponse) {
   let title = `${data.name} (${data.releaseYear})`
-  let subtitle = data.tagline
+  const subtitle = data.tagline
   if (data.itemType == "Episode") {
     title = `${data.seriesName} - S${data.seasonNumber}E${data.episodeNumber} - ${data.name}`
   } else if (data.itemType == "Season") {

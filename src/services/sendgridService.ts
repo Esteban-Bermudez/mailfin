@@ -17,7 +17,7 @@ export async function sendSendgridEmail(formattedResponse: MailfinResponse) {
   } else if (formattedResponse.itemType === "Episode") {
     templateId = process.env.SENDGRID_EPISODE_TEMPLATE_ID
   } else {
-    templateId = process.env.SENDGRID_SERIES_TEMPLATE_ID 
+    templateId = process.env.SENDGRID_SERIES_TEMPLATE_ID
   }
 
   const msg = {
