@@ -43,10 +43,11 @@ While using a VPN to connect to my Jellyfin server, I noticed I couldn't pull in
 5. Add a new generic webhook with the following settings:
    - **Webhook Name**: Mailfin
    - **Webhook URL**: `http://localhost:3000/item-added or http://localhost:3000/item-added/smtp`
-(Depending on your Mailfin setup. Replace `localhost` with your server IP if running Mailfin on a different machine).
+     (Depending on your Mailfin setup. Replace `localhost` with your server IP if running Mailfin on a different machine).
 
    - **Notification Types**: Select the `ItemAdded` event.
    - Check **Enable** and **Send All Properties**.
+
 6. Click **Save**.
 
 #### Choosing Data to Send
@@ -63,6 +64,7 @@ Here is an example of how you can add more data to your handlebars template in t
 not provided, Mailfin will use the data from the webhook and the first result based on `Name`.)
 
 **Minimal Example**:
+
 ```json
 {
   "ItemType": "{{ItemType}}",
@@ -100,7 +102,7 @@ One of the main reasons I made Mailfin was so that images could be loaded if you
 {
   "ServerUrl": "{{ServerUrl}}",
   "ItemId": "{{ItemId}}",
-  "SeriesId": "{{SeriesId}}",
+  "SeriesId": "{{SeriesId}}"
 }
 ```
 
