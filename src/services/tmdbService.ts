@@ -25,7 +25,10 @@ export async function getTmdbData(requestBody: any) {
       requestBody.ItemType === "Movie"
         ? requestBody.Name
         : requestBody.SeriesName
-    const searchURL = ` https://api.themoviedb.org/3/search/tv?query=${query}&page=1`
+    const searchURL =
+      requestBody.ItemType === "Movie"
+        ? `https://api.themoviedb.org/3/search/movie?query=${query}&page=1`
+        : `https://api.themoviedb.org/3/search/tv?query=${query}&page=1`
     const searchResponse = await fetch(searchURL, options).then((response) => {
       if (!response.ok) {
         throw {
