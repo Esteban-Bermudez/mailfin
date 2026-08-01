@@ -14,7 +14,7 @@ export async function getTmdbData(requestBody: any) {
     method: "GET",
     headers: {
       accept: "application/json",
-      Authorization: "Bearer " + tmdbData.apiKey,
+      Authorization: "Bearer " + tmdbData.accessToken,
     },
   }
 

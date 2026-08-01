@@ -30,7 +30,7 @@ While using a VPN to connect to my Jellyfin server, I noticed I couldn't pull in
 - Jellyfin server.
 - Jellyfin Webhook plugin installed.
 - SendGrid API key or SMTP server credentials.
-- TMDB API key for Metadata.
+- TMDB access token for Metadata.
 - Docker (optional, for containerized deployment).
 - Node.js (optional, for manual deployment).
 
@@ -47,6 +47,10 @@ While using a VPN to connect to my Jellyfin server, I noticed I couldn't pull in
 
    - **Notification Types**: Select the `ItemAdded` event.
    - Check **Enable** and **Send All Properties**.
+   - **Request Headers**: Add a header with key `Content-Type` and value `application/json`.
+     (Jellyfin's webhook plugin sends the body as `text/plain` by default, which would prevent
+     Mailfin from parsing it. Mailfin accepts JSON from any content type, but setting this
+     header explicitly is recommended.)
 
 6. Click **Save**.
 
@@ -116,7 +120,7 @@ Mailfin is an Express.js application that runs on **port 3000** by default. You 
 #### **Option 1: Using Docker**
 
 1. Create a `.env` file from the `sample.env` template
-2. Update the `.env` file with your TMDB Api Key and your SendGrid or SMTP credentials.
+2. Update the `.env` file with your TMDB Access Token and your SendGrid or SMTP credentials.
 3. Run the image from Docker Hub:
    ```bash
    docker run -p 3000:3000 --env-file .env mailfin/mailfin
@@ -141,7 +145,7 @@ Mailfin is an Express.js application that runs on **port 3000** by default. You 
    ```bash
    cp sample.env .env
    ```
-4. Update the `.env` file with your SendGrid or SMTP credentials and TMDB API Key.
+4. Update the `.env` file with your SendGrid or SMTP credentials and TMDB Access Token.
 5. Build and run the application:
    ```bash
    npm run build
