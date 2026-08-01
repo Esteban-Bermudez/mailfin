@@ -1,5 +1,5 @@
 interface TmdbBaseData {
-  apiKey: string
+  accessToken: string
   movieUrl: string
   tvUrl: string
   posterUrl: string
@@ -24,7 +24,7 @@ export interface TmdbResponse {
 }
 
 export const tmdbData: TmdbBaseData = {
-  apiKey: process.env.TMDB_ACCESS_TOKEN || process.env.TMDB_API_KEY || "",
+  accessToken: process.env.TMDB_ACCESS_TOKEN || "",
   movieUrl: "https://www.themoviedb.org/movie/",
   tvUrl: "https://www.themoviedb.org/tv/",
   // Can be refactored to use TMDB's image configuration endpoint
@@ -34,7 +34,9 @@ export const tmdbData: TmdbBaseData = {
   imdbUrl: "https://www.imdb.com/title/",
 }
 
-if (!tmdbData.apiKey) {
-  console.error("TMDB API Key not found")
+if (!tmdbData.accessToken) {
+  console.error(
+    "TMDB Access Token not found. Set TMDB_ACCESS_TOKEN in your .env file.",
+  )
   process.exit(1)
 }

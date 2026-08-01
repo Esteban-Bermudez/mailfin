@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express"
+import express, { Request, Response, NextFunction } from "express"
 import { sendSendgridEmail } from "./services/sendgridService"
 import { sendSMTPEmail } from "./services/smtpService"
 import { getTmdbData } from "./services/tmdbService"
@@ -6,7 +6,17 @@ import { getTmdbData } from "./services/tmdbService"
 const app = express()
 const port = process.env.PORT || 3000
 
-app.use(express.json())
+// Jellyfin's generic webhook plugin sends the body as `text/plain` by default,
+// so parse JSON from any content type instead of only application/json.
+app.use(express.json({ type: "*/*" }))
+
+app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+  if (err.type === "entity.parse.failed") {
+    res.status(400).json({ message: "Request body must be valid JSON" })
+    return
+  }
+  next(err)
+})
 
 const baseRouter = express.Router()
 baseRouter.get("/", (req: Request, res: Response) => {
